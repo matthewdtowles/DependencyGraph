@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Scanner;
+import java.util.Stack;
 
 /**
  * DirectedGraph
@@ -26,6 +27,7 @@ public class DirectedGraph<T> {
      * Map vertex T to the index it has in ArrayList
      */
     private HashMap<T, Integer> vertexMap;
+    private HashMap<Integer, T> vertexMapReverse;
     
     /**
      * ArrayList of adjacency lists
@@ -34,6 +36,12 @@ public class DirectedGraph<T> {
      */
     private ArrayList<LinkedList<Integer>> vertexLists;
     
+    
+    private ArrayList<T> discoveredVertices;
+    
+    
+    private Stack<T> vertexStack;
+    
     /**
      * Constructor
      * @param file
@@ -41,7 +49,11 @@ public class DirectedGraph<T> {
      */
     public DirectedGraph(File file) throws FileNotFoundException {
         vertexMap = new HashMap<>();
+        vertexMapReverse = new HashMap<>();
         vertexLists = new ArrayList<>();
+        discoveredVertices = new ArrayList<>();
+        vertexStack = new Stack<>();
+        
         Scanner scanner = new Scanner(file);
         while (scanner.hasNextLine()) {
             T[] vertices = (T[]) scanner.nextLine().split(" ");
@@ -62,6 +74,7 @@ public class DirectedGraph<T> {
                 // avoid duplications in map and array list
                 if (!vertexMap.containsKey(vertices[i])) {
                     vertexMap.put(vertices[i], vertexIndex);
+                    vertexMapReverse.put(vertexIndex, vertices[i]);
                     // add to array list too
                     // then update first item in this list
                     // with all items from adjList
@@ -76,36 +89,53 @@ public class DirectedGraph<T> {
     
     
     /**
+     * Generates a reverse topological order on a stack
+     * Iterating over stack and popping will give results in
+     * topological order
      * 
      * @param vertex - starting point to sort from
      * @throws InvalidClassException 
+     * @throws dependencygraph.CycleException 
      */
-    public void topologicalSort(T vertex) throws InvalidClassException {
+    public void topologicalSort(T vertex) 
+            throws InvalidClassException, CycleException {
         if (!vertexMap.containsKey(vertex)) {
             throw new InvalidClassException(vertex + " is not in file given.");
         }
         
-        // add discovered vertices here
-        ArrayList<T> discovered = new ArrayList<>();
+        if (discoveredVertices.contains(vertex)) {
+            throw new CycleException("Invalid class list. Cycle detected.");
+        }
         
-        /*
-        generate a reverse topological order 
-        so after it completes
-        the forward order gotten by popping vertices from stack
-
-        depth_first_search(vertex s) 
-        if s is discovered 
-            throw cycle detected exception 
-        if s is finished 
-            return 
-        mark s as discovered 
-        for all adjacent vertices v 
-            depth_first_search(v) 
-        mark s as finished 
-        push s onto the stack
-        */
+        // base case
+        if (vertexStack.search(vertex) > -1) {
+            return;
+        }
+        
+        discoveredVertices.add(vertex);
+        
+        LinkedList<Integer> adjList = vertexLists.get(vertexMap.get(vertex));
+        
+        for (Integer vert : adjList) {            
+            topologicalSort(vertexMapReverse.get(vert));
+        }
+        
+        // mark vertex as finished? or is it being in the stack good enough?
+        
+        vertexStack.push(vertex);
     }
 
+    public String getRecompilationOrder() throws Exception {
+        if (vertexStack.empty()) {
+            throw new Exception("Classes are not in order.");
+        }
+        String order = "";
+        
+        while (!vertexStack.empty()) {
+            order += vertexStack.pop() + " ";
+        }
+        return order;
+    }
     
     // getters:
     

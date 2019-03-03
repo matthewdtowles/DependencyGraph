@@ -82,6 +82,7 @@ public class GUI extends JFrame {
         bottomPanel = new JPanel();
         bottomScroll = new JScrollPane();
         outputTextArea = new JTextArea();
+        graph = null;
         
         // top panel layout
         topPanel.setBorder(createTitledBorder(""));
@@ -255,23 +256,8 @@ public class GUI extends JFrame {
         // not sure if try/catch is way to go yet
         // at least temporary placeholder
         try {
-            graph = new DirectedGraph(new File(fileTextField.getText())); 
-            
-            /////////////////////////////////////////////////////
-            // debugging
-            
-            int index = graph.getVertexIndex();
-//            ArrayList<LinkedList<Integer>> lists = graph.getVertexLists();
-//            HashMap<String, Integer> map = graph.getVertexMap();
-//            
-//            System.out.println("Index = " + index);
-//            System.out.println(lists.toString());
-//            System.out.println(map.toString());
-            // debugging
-            //////////////////////////////////////////////////////
-            
-            
-            
+            graph = new DirectedGraph(new File(fileTextField.getText()));
+
             // if graph is built successfully
             JOptionPane.showMessageDialog(
                 bottomPanel, 
@@ -299,6 +285,32 @@ public class GUI extends JFrame {
      */
     private void orderButtonActionPerformed(ActionEvent evt) {
         // only run if a DirectedGraph has been built
+        try {
+            graph.topologicalSort(classTextField.getText());
+            String recompOrder = graph.getRecompilationOrder();
+            outputTextArea.setText(recompOrder);
+        } catch (CycleException e) {
+            JOptionPane.showMessageDialog(
+                    bottomPanel, 
+                    e.getMessage(), 
+                    e.toString(), 
+                    JOptionPane.ERROR_MESSAGE
+            );
+        } catch (InvalidClassException e) {
+            JOptionPane.showMessageDialog(
+                    bottomPanel, 
+                    e.getMessage(), 
+                    e.toString(), 
+                    JOptionPane.ERROR_MESSAGE
+            );
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(
+                    bottomPanel, 
+                    "No graph to sort.", 
+                    "Topological Ordering Failed", 
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
         
         // if an invalid class name given, InvalidClassException thrown
     }      
