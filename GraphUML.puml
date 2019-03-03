@@ -1,0 +1,6 @@
+@startuml
+class dependencygraph.CycleException
+class dependencygraph.DirectedGraph
+class dependencygraph.GUI
+class dependencygraph.InvalidClassException
+@enduml

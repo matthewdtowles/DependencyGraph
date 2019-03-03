@@ -27,6 +27,10 @@ public class DirectedGraph<T> {
      * Map vertex T to the index it has in ArrayList
      */
     private HashMap<T, Integer> vertexMap;
+    
+    /**
+     * Map index to vertex T (reverse of vertexMap)
+     */
     private HashMap<Integer, T> vertexMapReverse;
     
     /**
@@ -36,10 +40,14 @@ public class DirectedGraph<T> {
      */
     private ArrayList<LinkedList<Integer>> vertexLists;
     
-    
+    /**
+     * Vertices discovered when sorting
+     */
     private ArrayList<T> discoveredVertices;
     
-    
+    /**
+     * Resultant stack from topological sort
+     */
     private Stack<T> vertexStack;
     
     /**
@@ -118,10 +126,7 @@ public class DirectedGraph<T> {
         
         for (Integer vert : adjList) {            
             topologicalSort(vertexMapReverse.get(vert));
-        }
-        
-        // mark vertex as finished? or is it being in the stack good enough?
-        
+        }        
         vertexStack.push(vertex);
     }
 
@@ -135,19 +140,5 @@ public class DirectedGraph<T> {
             order += vertexStack.pop() + " ";
         }
         return order;
-    }
-    
-    // getters:
-    
-    public int getVertexIndex() {
-        return vertexIndex;
-    }
-
-    public HashMap<T, Integer> getVertexMap() {
-        return vertexMap;
-    }
-
-    public ArrayList<LinkedList<Integer>> getVertexLists() {
-        return vertexLists;
     }
 }

@@ -253,11 +253,8 @@ public class GUI extends JFrame {
      * @param evt 
      */
     private void buildButtonActionPerformed(ActionEvent evt) {
-        // not sure if try/catch is way to go yet
-        // at least temporary placeholder
         try {
             graph = new DirectedGraph(new File(fileTextField.getText()));
-
             // if graph is built successfully
             JOptionPane.showMessageDialog(
                 bottomPanel, 
@@ -289,14 +286,7 @@ public class GUI extends JFrame {
             graph.topologicalSort(classTextField.getText());
             String recompOrder = graph.getRecompilationOrder();
             outputTextArea.setText(recompOrder);
-        } catch (CycleException e) {
-            JOptionPane.showMessageDialog(
-                    bottomPanel, 
-                    e.getMessage(), 
-                    e.toString(), 
-                    JOptionPane.ERROR_MESSAGE
-            );
-        } catch (InvalidClassException e) {
+        } catch (CycleException | InvalidClassException e) {
             JOptionPane.showMessageDialog(
                     bottomPanel, 
                     e.getMessage(), 
@@ -311,8 +301,6 @@ public class GUI extends JFrame {
                     JOptionPane.ERROR_MESSAGE
             );
         }
-        
-        // if an invalid class name given, InvalidClassException thrown
     }      
     
     
