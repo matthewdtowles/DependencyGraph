@@ -52,6 +52,17 @@ public class DirectedGraph<T> {
     
     /**
      * Constructor
+     * Initialize instance vars
+     * Scan user input file
+     * Loop through each line
+     * Build and map each item/vertex in current line
+     * Add first item of each line's map value as the 
+     * key for the ArrayList of linked lists
+     * Since all values after first value on a line belong
+     * to the first value's adjacency list
+     * Also create a reverse of the vertexMap to lookup
+     * vertex name by the vertexLists integer key
+     * 
      * @param file
      * @throws java.io.FileNotFoundException
      */
@@ -120,8 +131,11 @@ public class DirectedGraph<T> {
             return;
         }
         
+        // 'mark' vertex as discovered by adding to
+        // disovered vertices array list
         discoveredVertices.add(vertex);
         
+        // the vertex's adjacency list
         LinkedList<Integer> adjList = vertexLists.get(vertexMap.get(vertex));
         
         for (Integer vert : adjList) {            
@@ -130,12 +144,23 @@ public class DirectedGraph<T> {
         vertexStack.push(vertex);
     }
 
+    
+    /**
+     * Returns a string of the stack items popped in order
+     * Called after topologicalSort() is called
+     * This will give the output for the Recompilation Order text area
+     * 
+     * @return topological order of stack
+     * @throws Exception 
+     */
     public String getRecompilationOrder() throws Exception {
         if (vertexStack.empty()) {
             throw new Exception("Classes are not in order.");
         }
+        // output string
         String order = "";
         
+        // loop through stack and build string output
         while (!vertexStack.empty()) {
             order += vertexStack.pop() + " ";
         }
